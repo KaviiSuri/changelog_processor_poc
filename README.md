@@ -11,29 +11,50 @@ and the Flutter guide for
 [developing packages and plugins](https://flutter.dev/developing-packages). 
 -->
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+
+This is a Proof Of Concept for GSOC project "Changelog Parser for pub.dev".
+
+This takes in package name and Changelog.md url and generates a modified change log with versions as hyperlinks.
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+- Get a modified log file with all versions as links
+- Fetch versions from pub.dev/api to prevent broken link errors
+- Generate Hyperlinks for all occurances, not just headings.
 
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
+### Generate Modified Changelog from URL.
 
 ```dart
-const like = 'sample';
+  ChangelogProcessor cp = await ChangelogProcessor.fromChangeLogURL(
+      "uuid",
+      Uri.parse(
+          "https://raw.githubusercontent.com/Daegalus/dart-uuid/master/CHANGELOG.md"));
+  String modifiedLogs = cp.getProccessedLog();
 ```
 
-## Additional information
+### Generate Modified Changelog from MD Source
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+```dart
+  String source = """
+  v1.0.0
+  ....
+  ....
+  """;
+
+  List<String> versions = [
+    "1.0.0",
+    "1.0.1",
+    ...
+  ]
+
+  String modifiedLogs = ChangelogProcessor.fromChangeLogSource("..name", versions, source).getProcessedLog();
+```
+
+## Limitations
+
+This project solves a simplified version of the problem using regex `r"v?(\d+.\d+.\d+)`, which might not be enough and edge cases might arise.
+
+I hope to improve and enhance it in my GSOC internship.

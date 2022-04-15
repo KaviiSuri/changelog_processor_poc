@@ -1,21 +1,28 @@
 library changelog_proccessor_poc;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+import 'package:changelog_proccessor_poc/utils/package_info.dart';
+import "package:http/http.dart" as http;
 
 /// A class to process CHANGELOG.md files by passing in source or url
 class ChangelogProcessor {
-  static const String kVersionRegex = r"v?(\d.\d.\d)";
+  static const String kVersionRegex = r"v?(\d+.\d+.\d+)";
   static const String kPubDevRoot = "https://pub.dev/packages";
 
   String source;
   List<String> versions;
   String packageName;
 
-  ChangelogProcessor.fromSource(
+  static Future<ChangelogProcessor> fromChangeLogURL(
+      String packageName, Uri changlogURL) async {
+    String source = await http.read(changlogURL);
+
+    PackageInfo pkgInfo = await PackageInfo.fromName(packageName);
+
+    return ChangelogProcessor.fromChangeLogSource(
+        packageName, pkgInfo.versions, source);
+  }
+
+  ChangelogProcessor.fromChangeLogSource(
     this.packageName,
     this.versions,
     this.source,
